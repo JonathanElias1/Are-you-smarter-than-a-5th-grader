@@ -218,7 +218,8 @@ export default function JonSmarterGame() {
   const volumeRef = useRef(volume);
   useEffect(() => { volumeRef.current = volume; if (themeRef.current) themeRef.current.volume = volume; }, [volume]);
   const themeRef = useRef(null);
-  const [themeUrl] = useState("/are-you-smarter-song.mp3");
+  // const [themeUrl] = useState("/are-you-smarter-song.mp3");
+  const [themeUrl] = useState(`${import.meta.env.BASE_URL}are-you-smarter-song.mp3`);
   const [isThemePlaying, setIsThemePlaying] = useState(false);
 
   // Fullscreen state
@@ -476,7 +477,9 @@ function playFanfare() {
         <header className="px-4 md:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Replace src with your image in /public to show the bubble photo */}
-            <img src="/jon-5th-grade.jpg" alt="Jon (5th grade)" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover" />
+         
+            {/* <img src="/jon-5th-grade.jpg" alt="Jon (5th grade)" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover" /> */}
+         <img src={`${import.meta.env.BASE_URL}jon-5th-grade.jpg`}/>
             {/* <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/20 backdrop-blur-sm" /> */}
             <h1 className={classNames(h1Size, "font-extrabold tracking-tight drop-shadow")}>
               Are You Smarter Than a 5th Grader?
