@@ -459,15 +459,15 @@ function playFanfare() {
 
   // Wider container + bigger type in fullscreen
   const containerW = isFs ? "max-w-[1500px] md:max-w-[1700px]" : "max-w-5xl";
-  const boardMinW = isFs ? "min-w-[1200px]" : "min-w-[900px]";
-  const h1Size = isFs ? "text-5xl md:text-6xl" : "text-3xl md:text-4xl";
+const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
+ const h1Size = isFs ? "text-5xl md:text-6xl" : "text-2xl sm:text-3xl md:text-4xl";
   const gradeTitleSize = isFs ? "text-2xl" : "text-xl";
   const tilePad = isFs ? "p-4 md:p-5" : "p-3";
   const tileLabelSize = isFs ? "text-sm" : "text-xs";
   const tilePtsSize = isFs ? "text-base" : "text-sm";
 
   return (
-    <div className="min-h-screen w-full text-white" style={gradientBg}>
+    <div className="min-h-[100dvh] w-full text-white overscroll-none pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]" style={gradientBg}>
       {/* Hidden audio element for theme (no loop) */}
       <audio ref={themeRef} src={themeUrl} preload="auto" playsInline />
 
@@ -487,10 +487,10 @@ function playFanfare() {
   decoding="async"
 />
             {/* <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/20 backdrop-blur-sm" /> */}
-            <h1 className={classNames(h1Size, "font-extrabold tracking-tight drop-shadow")}>
-              Are You Smarter Than a 5th Grader?
-              <span className="block text-white/90 text-lg md:text-xl">Jon Edition</span>
-            </h1>
+          <h1 className={classNames(h1Size, "font-extrabold tracking-tight drop-shadow")}>
+  Are You Smarter Than a 5th Grader?
+  <span className="hidden sm:block text-white/90 text-lg md:text-xl">Jon Edition</span>
+</h1>
           </div>
           <div className="text-right px-4 flex items-end gap-3 md:gap-4">
             <div>
@@ -538,8 +538,8 @@ function playFanfare() {
         {phase === "board" && (
           <main className="px-4 md:px-8 pb-10">
             <div className="mb-3 text-sm opacity-90">Pick any grade & question tile to begin. Remaining: {remaining}</div>
-            <div className="overflow-x-auto">
-              <div className={classNames("grid grid-cols-5 gap-3", boardMinW)}>
+            <div className="overflow-x-auto select-none">
+             <div className={classNames("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3", boardMinW)}>
                 {[1, 2, 3, 4, 5].map((g) => (
                   <div key={g} className="bg-white/10 rounded-2xl p-3 md:p-4 backdrop-blur-md">
                     <div className={classNames("text-center font-black mb-2", gradeTitleSize)}>Grade {g}</div>
@@ -552,10 +552,10 @@ function playFanfare() {
                             disabled={isPlayed}
                             onClick={() => startQuestion(q.id)}
                             className={classNames(
-                              "w-full text-left bg-white text-black rounded-xl shadow transition",
-                              tilePad,
-                              isPlayed ? "opacity-40 line-through" : "hover:shadow-lg"
-                            )}
+                         "w-full text-left bg-white text-black rounded-xl shadow transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+   tilePad,
+   isPlayed ? "opacity-40 line-through" : "hover:shadow-lg"
+ )}
                           >
                             <div className={classNames("uppercase tracking-widest opacity-70 font-bold", tileLabelSize)}>{q.subject}</div>
                             <div className={classNames("font-semibold", tilePtsSize)}>{q.grade * 100} pts</div>
@@ -657,7 +657,7 @@ function playFanfare() {
                 </AnimatePresence>
 
                 {/* Choices */}
-                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+             <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3 select-none">
                   {current.choices.map((choice, i) => {
                     const isAnswer = i === current.answerIndex;
                     let stateClasses = "";
@@ -669,7 +669,7 @@ function playFanfare() {
                         onClick={() => handleAnswer(i)}
                         disabled={locked}
                         className={classNames(
-                          "relative group text-left bg-white text-black rounded-2xl p-4 shadow hover:shadow-lg transition focus:outline-none focus-visible:ring-4 focus-visible:ring-black/40",
+                          "relative group text-left bg-white text-black rounded-2xl p-4 min-h-[56px] shadow hover:shadow-lg transition focus:outline-none focus-visible:ring-4 focus-visible:ring-black/40 cursor-pointer disabled:cursor-not-allowed",
                           stateClasses
                         )}
                       >
