@@ -479,7 +479,13 @@ function playFanfare() {
             {/* Replace src with your image in /public to show the bubble photo */}
          
             {/* <img src="/jon-5th-grade.jpg" alt="Jon (5th grade)" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover" /> */}
-         <img src={`${import.meta.env.BASE_URL}jon-5th-grade.jpg`}/>
+      <img
+  src={`${import.meta.env.BASE_URL}jon-5th-grade.jpg`}
+  alt="Jon (5th grade)"
+  className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover shadow"
+  loading="eager"
+  decoding="async"
+/>
             {/* <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/20 backdrop-blur-sm" /> */}
             <h1 className={classNames(h1Size, "font-extrabold tracking-tight drop-shadow")}>
               Are You Smarter Than a 5th Grader?
