@@ -22,34 +22,123 @@ const BRAND_B = "#36e326";
 // ————————————————————————————————————————————
 const QUESTIONS = [
   // Grade 1
-  { id: "q1", grade: 1, subject: "Spelling", q: "What is Jon's company name?", choices: ["JON-E Worldwide", "JONE World Wide", "JonE Worldwide", "JON-E World Wide"], answerIndex: 0, hint: "It's hyphenated and one word for Worldwide." },
-  { id: "q2", grade: 1, subject: "Math (Time)", q: "If Jon's party starts at 5:00 PM and lasts 3 hours, when does it end?", choices: ["7:00 PM", "8:00 PM", "9:00 PM", "10:00 PM"], answerIndex: 1, hint: "Add three hours to five o'clock." },
-  { id: "q17", grade: 1, subject: "Civics", q: "Which state does Jon live in?", choices: ["California", "Nevada", "Arizona", "Utah"], answerIndex: 2, hint: "The Grand Canyon State." },
-  { id: "q18", grade: 1, subject: "Occupations", q: "Jon runs a video-first ______ company.", choices: ["construction", "production", "insurance", "shipping"], answerIndex: 1, hint: "Lights, camera…" },
+  { id: "q1", grade: 1, subject: "Language Arts", q: "What is the verb in the sentence \"Jon saved my life\"?", choices: ["my", "save", "saved", "life"], answerIndex: 2, hint: "Verbs are action words. Which word tells what Jon did?" },
+  { id: "q2",   grade: 1,
+  subject: "Math",
+  q: "The event starts at 12:27 PM. Kaz texts 'almost ready' at 12:18 PM. She takes 56 minutes to get ready and 13 minutes to drive to the event. What time will Kaz actually arrive? (assume she follows the math)",
+  choices: ["1:27 PM", "12:59 PM", "1:11 PM", "12:27 PM"],
+  answerIndex: 0,
+  hint: "Ignore the start time (just like Kaz). Use addition."
+},
+  { id: "q17", grade: 1, subject: "Culinary Arts", q: "Besides refusing to eat any animal he can have fun with, which food does Jon refuse to eat? ", choices: ["Pulled Pork", "Mushrooms", "Octopus", "Shredded Chicken"], answerIndex: 3, hint: "He hates the stringy, 'pulled' texture." },
+  {
+  id: "q18",
+  grade: 1,
+  subject: "Media",
+  q: "Jon records video by attaching a 28–70mm lens to which item?",
+  choices: ["Camera body", "Tripod", "Phone", "Camcorder"],
+  answerIndex: 0,
+  hint: "It’s the part the lens snaps onto, the one with the record button."
+},
 
   // Grade 2
-  { id: "q3", grade: 2, subject: "Geography", q: "Which city is Jon based in?", choices: ["Tucson", "Sedona", "Phoenix", "Flagstaff"], answerIndex: 2, hint: "Think Valley of the Sun." },
-  { id: "q4", grade: 2, subject: "Web / Reading", q: "What is Jon's website domain?", choices: ["jon-worldwide.com", "jon-e.com", "jone.co", "je-world.com"], answerIndex: 1, hint: "Hyphen in the middle, short and sweet." },
-  { id: "q19", grade: 2, subject: "Geography", q: "Phoenix sits in which desert?", choices: ["Mojave", "Sonoran", "Chihuahuan", "Great Basin"], answerIndex: 1, hint: "Home to the saguaro cactus." },
-  { id: "q20", grade: 2, subject: "Dates", q: "Jon's birthday month is…", choices: ["October", "December", "June", "April"], answerIndex: 1, hint: "Holiday season month." },
+  { id: "q3",  grade: 2,
+  subject: "Math",
+  q: "Jon buys tape for $2.75 and a marker for $1.25. He pays with $5.00. How much change does he get?",
+  choices: ["$0.75", "$1.00", "$1.25", "$2.00"],
+  answerIndex: 1,
+  hint: "Add prices, then subtract from 5."},
+  { id: "q4", grade: 2,
+  subject: "Geography",
+  q: "Jon recently learned part of his family heritage traces to which continent?",
+  choices: ["South America", "Europe", "Africa", "Asia"],
+  answerIndex: 3,
+  hint: "Think of the continent with Japan and Thailand." },
+  { id: "q19",  grade: 2,
+  subject: "Language Arts",
+  q: "Choose the correctly punctuated sentence.",
+  choices: [
+    "The other day, Jon was told: \"You are the best person I know in the entire world, Jon. You saved my life. You are, without question, the greatest of all time.\"",
+    "The other day, Jon was told, \"You are the best person I know in the entire world Jon, you saved my life, and you are without question the greatest of all time\".",
+    "The other day, Jon was told: \"you are the best person I know in the entire world, Jon you saved my life, you are the greatest of all time.\"",
+    "The other day Jon was told \"You are the best person I know in the entire world, Jon! You saved my life and you are, without question the greatest of all time\"."
+  ],
+  answerIndex: 0,
+  hint: "Use a colon to introduce a multi-sentence quote, commas for direct address (“Jon”), and end each sentence with a period inside the quotes."},
+  { id: "q20", grade: 2,
+  subject: "Earth Science",
+  q: "Rocks that change deep underground because of heat and pressure are called ______ rocks.",
+  choices: ["igneous", "sedimentary", "metamorphic", "volcanic"],
+  answerIndex: 2,
+  hint: "They ‘morph’ (change) inside Earth."},
 
   // Grade 3
-  { id: "q5", grade: 3, subject: "Nutrition", q: "Jon prefers which veggie with his chicken teriyaki?", choices: ["Carrots", "Peas", "Broccoli", "Spinach"], answerIndex: 2, hint: "Tree-looking florets." },
-  { id: "q6", grade: 3, subject: "Media Tech", q: "Which camera does Jon own?", choices: ["Canon R5", "Sony a7S III", "Panasonic GH5", "Nikon Z6 II"], answerIndex: 1, hint: "Low-light legend from Sony." },
+  { id: "q5", grade: 3, subject: "Math",
+  q: "Jon’s break lasts 3/4 of an hour. One-third of that is spent talking to coworkers about the weather. How many minutes is that?",
+  choices: ["12", "18", "20", "15"],
+  answerIndex: 3,
+  hint: "First find 3/4 of 60 (=45), then take 1/3 of 45." },
+  { id: "q6", grade: 3,  subject: "Math",
+  q: "Jon starts editing at 3:47 PM. He edits 38 minutes, takes a 9-minute break, then edits 14 more minutes. When does he finish?",
+  choices: ["4:47 PM", "4:48 PM", "4:54 PM", "4:38 PM"],
+  answerIndex: 1,
+  hint: "Add 38, then 9, then 14 to 3:47." },
+  { id: "q14", grade: 3, subject: "Language Arts",
+  q: "Choose the correctly punctuated sentence.",
+  choices: [
+    "“Jon, you're absolutely the greatest,” Cody said.",
+    "“Jon you're absolutely the greatest” Cody said.",
+    "“Jon, youre absolutely the greatest,” said Cody.",
+    "“Jon, you're absolutely the greatest”,” Cody said."
+  ],
+  answerIndex: 0,
+  hint: "Comma for direct address, apostrophe in you’re, comma inside the quotes." },
+  { id: "q16", grade: 3,
+  subject: "Science",
+  q: "On a hot Phoenix day, water drops form on the outside of Jon’s cold bottle. This process is called ______.",
+  choices: ["evaporation", "condensation", "melting", "freezing"],
+  answerIndex: 1,
+  hint: "Gas in the air turns back into liquid on the bottle." },
 
   // Grade 4
-  { id: "q7", grade: 4, subject: "Audio Gear", q: "Which lav system is in Jon's kit?", choices: ["RØDE Wireless GO II", "DJI Mic 2", "Sennheiser EK 100 G4", "Tascam DR-10L Pro"], answerIndex: 2, hint: "The classic Sennheiser G-series." },
-  { id: "q8", grade: 4, subject: "Branding / Design", q: "Jon's official brand gradient runs between which two hex colors?", choices: ["#5b9bd5 → #36e326", "#ff5733 → #33ffce", "#5b9bd5 → #2ecc71", "#36e326 → #5b9bd5 (reversed)"], answerIndex: 0, hint: "Blue on the left, vibrant green on the right." },
+  { id: "q7", grade: 4,
+  subject: "Math",
+  q: "Jon has 53 photos to print and puts them in rows of 4. How many full rows and how many are left over?",
+  choices: ["12 rows, 2 left", "13 rows, 1 left", "14 rows, 1 left", "13 rows, 2 left"],
+  answerIndex: 1,
+  hint: "53 ÷ 4 = ? (think remainder)." },
+  { id: "q8", 
+    grade: 4, subject: "Language Arts",
+ q: "The legendary, astonishing Jon, clearly the greatest filmmaker alive, placed the mic under the table. Which phrase is a prepositional phrase?",
+  choices: ["the legendary, astonishing Jon", "placed the mic", "under the table", "greatest filmmaker alive"],
+  answerIndex: 2,
+  hint: "Look for a position word (preposition) + its object."},
+  { id: "q12", grade: 4, subject: "Culinary Arts", q: "Which sauce does Jon prefer?", choices: ["Sriracha", "Frank's RedHot", "Bachan's", "Heinz"], answerIndex: 2, hint: "Japanese BBQ—brand starts with a B." },
+  { id: "q13", grade: 4,   subject: "Science",
+  q: "In this scientific food chain, who is the PRIMARY consumer? Kale → Guinea Pig → Lion → Jon",
+  choices: ["Kale (the salad)", "Guinea Pig", "Lion", "Jon (Jon)"],
+  answerIndex: 1,
+  hint: "Primary consumers eat plants." },
 
   // Grade 5
-  { id: "q9", grade: 5, subject: "Dates", q: "Jon's birthday is on which date?", choices: ["December 16, 1996", "November 16, 1995", "December 6, 1996", "January 16, 1997"], answerIndex: 0, hint: "Mid-December!" },
-  { id: "q10", grade: 5, subject: "Career", q: "On what date did Jon start a new job in 2025?", choices: ["April 4, 2025", "April 14, 2025", "May 14, 2025", "March 14, 2025"], answerIndex: 1, hint: "It was a Monday in April." },
-  { id: "q11", grade: 5, subject: "Travel / Culture", q: "What country is Jon saving for a future trip to?", choices: ["Japan", "Spain", "Brazil", "Canada"], answerIndex: 0, hint: "Sushi, bullet trains, cherry blossoms." },
-  { id: "q12", grade: 4, subject: "Cooking", q: "Which sauce does Jon use for his air-fried Japanese BBQ chicken?", choices: ["Sriracha", "Bachan's", "Frank's", "Heinz BBQ"], answerIndex: 1, hint: "Japanese BBQ—brand starts with a B." },
-  { id: "q13", grade: 4, subject: "Pets / Life", q: "Which pair of dogs has been mentioned in Jon's home?", choices: ["Poodle & Pug", "Golden & Beagle", "Husky & Black Lab", "Dachshund & Chihuahua"], answerIndex: 2, hint: "One is a sled-ready breed; the other, a classic family dog." },
-  { id: "q14", grade: 3, subject: "Creative Projects", q: "In the 'True Friends' music video concept, who are Jon's friends?", choices: ["Wild animals", "Inanimate objects", "Random strangers", "Aliens in disguise"], answerIndex: 1, hint: "A lamp can listen too… maybe." },
-  { id: "q15", grade: 5, subject: "Fitness / Goals", q: "What body-fat target did Jon set during his cut phase?", choices: ["20%", "15%", "10%", "8%"], answerIndex: 2, hint: "Two digits; the lowest of the healthy athletic range here." },
-  { id: "q16", grade: 3, subject: "Tastes", q: "Which flavor does Jon NOT enjoy on food?", choices: ["Sweet", "Savory", "Hot/Spicy", "Umami"], answerIndex: 2, hint: "No hot sauce, please." },
+  { id: "q9", grade: 5, subject: "Math",   q: "Jon quotes $500 for a project. The client gets a 20% discount, then 8% sales tax is added. What is the total price?",
+  choices: ["$420", "$432", "$440", "$480"],
+  answerIndex: 1,
+  hint: "Apply the discount first, then tax." },
+  { id: "q10", grade: 5, subject: "Science",   q: "Which material is the best conductor for a microphone cable?",
+  choices: ["Copper", "Rubber", "Plastic", "Wood"],
+  answerIndex: 0,
+  hint: "Think metals vs insulators." },
+  { id: "q11", grade: 5, subject: "Social Studies", q: "Jon’s violation letter about his beautiful string lights built by Duncan cites 'ARC Guideline 4.3' and the CC&Rs. Jon appeals. Which asshole organization has the authority to fuck him over like this?",
+  choices: ["Property manager", "Architectural Review Committee", "HOA Board of Directors", "City code enforcement"],
+  answerIndex: 2,
+  hint: "Management mails letters; committees review; the elected board makes final decisions." },  
+  { id: "q15", grade: 5, subject: "Health/PE",
+  q: "Achieving a perfect score on his Secret Service fitness test, during the 1.5 mile event, Jon ran 1.5 miles in 11 minutes and 15 seconds. What was his average pace per mile?",
+  choices: ["6:45 per mile", "8:00 per mile", "7:45 per mile", "7:30 per mile"],
+  answerIndex: 3,
+  hint: "11:15 = 11.25 minutes. Divide 11.25 by 1.5."},
+
 ];
 
 // Currency formatter
@@ -161,9 +250,9 @@ export default function JonSmarterGame() {
   // Million dollar question (no lifelines)
   const MILLION_Q = {
     id: "mq1",
-    q: "Which of these is NOT one of Jon's planned characters in the 'One Cousin' music video?",
-    choices: ["Serious Business Jon", "Jon Food", "Goth Jon", "Existential Crisis Jon"],
-    answerIndex: 3,
+    q: "What did 5th-grade Jon name his bird, and about how long can an Amazon parrot typically live?",
+    choices: [   "Reno — about 100 years", "Rob-E — about 40 years", "Reso — about 80 years",  "Revo — about 60 years"],
+    answerIndex: 2,
   };
 
  // ——— Audio helpers (Web Audio API) ———
@@ -225,6 +314,13 @@ function playCorrect() {
   }, 330);
 }
 
+// Quick UI blip when selecting a question tile
+function playSelect() {
+  // low→high double blip; distinct from the correct chime
+  playTone(450, 0.09, "sine", 0.9);
+  setTimeout(() => playTone(720, 0.12, "triangle", 0.55), 70);
+}
+
 // WIN fanfare (million-dollar) — new, big and loud
 function playWin() {
   const arp = [523, 659, 784, 988, 1175]; // C5 E5 G5 B5 D6
@@ -284,6 +380,7 @@ function playFanfare() {
 
   function startQuestion(qid) {
     if (played.has(qid)) return;
+    playSelect();   
     setCurrentId(qid);
     setPhase("question");
     setLocked(false); setResult(null); setPeekOverlay(false); setCopyModal(false);
