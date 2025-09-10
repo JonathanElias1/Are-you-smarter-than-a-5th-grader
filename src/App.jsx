@@ -12,6 +12,8 @@ import { motion, AnimatePresence } from "framer-motion";
  *   - Bright “correct” chime
  *   - Beefier wrong-answer buzzer
  *   - Distinct lose sting
+ * - Cash Out: Player can cash out anytime before game end.
+ *   -> Must "repeat after me" then claim Jon Bucks equal to current score.
  */
 
 const BRAND_A = "#5b9bd5";
@@ -200,11 +202,34 @@ function WinWinnings({ to = 999_999, duration = 2600 }) {
   return <span>Winnings: <span className="font-black">{USD.format(val)}</span></span>;
 }
 
+/** Simple count-up display for Jon Bucks */
+function CountTo({ to = 0, duration = 1200, prefix = "", suffix = "" }) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let raf; const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.floor(to * eased));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [to, duration]);
+  return (
+    <span>
+      {prefix}
+      <span className="font-black">{val.toLocaleString()}</span>
+      {suffix}
+    </span>
+  );
+}
+
 // ————————————————————————————————————————————
 // Main App
 // ————————————————————————————————————————————
 export default function JonSmarterGame() {
-  const [phase, setPhase] = useState("board"); // board | question | million | win | lose
+  const [phase, setPhase] = useState("board"); // board | question | million | win | lose | cashout
   const [currentId, setCurrentId] = useState(null);
   const [played, setPlayed] = useState(new Set());
   const [score, setScore] = useState(0);
@@ -212,14 +237,17 @@ export default function JonSmarterGame() {
   // Lifelines (once per game)
   const [lifelines, setLifelines] = useState({ peek: false, copy: false, hint: false, save: false });
   const [saveArmed, setSaveArmed] = useState(true); // auto-protect on first wrong
-  const [hintForId, setHintForId] = useState(null); // <- NEW: which question the Hint was used on
+  const [hintForId, setHintForId] = useState(null); // which question the Hint was used on
+
+  // Cash Out state
+  const [cashedAt, setCashedAt] = useState(0);
+  const [cashoutClaimed, setCashoutClaimed] = useState(false);
 
   // Audio state (master volume)
   const [volume, setVolume] = useState(0.8); // 0..1
   const volumeRef = useRef(volume);
   useEffect(() => { volumeRef.current = volume; if (themeRef.current) themeRef.current.volume = volume; }, [volume]);
   const themeRef = useRef(null);
-  // const [themeUrl] = useState("/are-you-smarter-song.mp3");
   const [themeUrl] = useState(`${import.meta.env.BASE_URL}are-you-smarter-song.mp3`);
   const [isThemePlaying, setIsThemePlaying] = useState(false);
 
@@ -394,10 +422,26 @@ function playFanfare() {
     setPhase("board"); setCurrentId(null); setPlayed(new Set()); setScore(0);
     setLifelines({ peek: false, copy: false, hint: false, save: false }); setSaveArmed(true);
     setLocked(false); setResult(null); setPeekOverlay(false); setCopyModal(false);
-    setHintForId(null); // <- NEW: clear hint target
+    setHintForId(null); // clear hint target
   }
 
   function consumeLifeline(name) { setLifelines((L) => ({ ...L, [name]: true })); }
+
+  // ——— New: Cash Out ———
+  function goCashOut() {
+    if (phase === "win" || phase === "lose") return;
+    setCashedAt(score);          // snapshot the prize at time of cash out
+    setCashoutClaimed(false);
+    setLocked(false);
+    setResult(null);
+    setPeekOverlay(false);
+    setCopyModal(false);
+    setPhase("cashout");
+  }
+  function claimCashout() {
+    setCashoutClaimed(true);
+    playFanfare();
+  }
 
   // ——— Lifelines ———
   function doPeek() { if (phase !== "question" || locked || lifelines.peek) return; consumeLifeline("peek"); playSfx("peek"); setPeekOverlay(true); }
@@ -406,7 +450,7 @@ function playFanfare() {
     if (phase !== "question" || locked || lifelines.hint || !current) return;
     consumeLifeline("hint");
     playSfx("hint");
-    setHintForId(current.id); // <- NEW: remember which question got the hint
+    setHintForId(current.id); // remember which question got the hint
   }
 
   // ——— Board question grading ———
@@ -483,8 +527,6 @@ function playFanfare() {
         {/* Header */}
         <header className="px-4 md:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Replace src with your image in /public to show the bubble photo */}
-            {/* <img src="/jon-5th-grade.jpg" alt="Jon (5th grade)" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover" /> */}
             <img
               src={`${import.meta.env.BASE_URL}jon-5th-grade.jpg`}
               alt="Jon (5th grade)"
@@ -492,7 +534,6 @@ function playFanfare() {
               loading="eager"
               decoding="async"
             />
-            {/* <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/20 backdrop-blur-sm" /> */}
             <h1 className={classNames(h1Size, "font-extrabold tracking-tight drop-shadow")}>
               Are You Smarter Than a 5th Grader?
               <span className="hidden sm:block text-white/90 text-lg md:text-xl">Jon Edition</span>
@@ -524,12 +565,24 @@ function playFanfare() {
               <button onClick={toggleFullscreen} className="px-3 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-sm font-semibold transition">
                 {isFs ? "Exit Fullscreen" : "Fullscreen"}
               </button>
+
+              {/* New: Cash Out button (disabled while locked) */}
+              {!["win", "lose", "cashout"].includes(phase) && (
+                <button
+                  onClick={goCashOut}
+                  disabled={locked}
+                  className="px-3 py-2 rounded-xl bg-yellow-300 text-black hover:opacity-90 text-sm font-semibold transition shadow"
+                  title="Cash out now and claim Jon Bucks equal to your current score"
+                >
+                  Cash Out
+                </button>
+              )}
             </div>
           </div>
         </header>
 
-        {/* Lifelines strip (global) */}
-        {phase !== "million" && phase !== "win" && phase !== "lose" && (
+        {/* Lifelines strip (global) — hidden on million/win/lose/cashout */}
+        {phase !== "million" && phase !== "win" && phase !== "lose" && phase !== "cashout" && (
           <div className="px-4 md:px-8">
             <div className="flex flex-wrap gap-2 items-center mb-2">
               {lifelinePill("Peek (Cody)", lifelines.peek)}
@@ -592,7 +645,7 @@ function playFanfare() {
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="inline-flex items-center gap-3">
-                  <span className="px-3 py-1 rounded-full bg-black/30 text-white/90 text-xs uppercase tracking-wider">{current.subject}</span>
+                  <span className="px-3 py-1 rounded-full bg:black/30 bg-black/30 text-white/90 text-xs uppercase tracking-wider">{current.subject}</span>
                   <span className="px-3 py-1 rounded-full bg-black/30 text-white/90 text-xs uppercase tracking-wider">Grade {current.grade}</span>
                   <span className="px-3 py-1 rounded-full bg-black/30 text-white/90 text-xs uppercase tracking-wider">{current.grade * 100} pts</span>
                 </div>
@@ -824,6 +877,47 @@ function playFanfare() {
               <div className="mt-4">
                 <button onClick={restart} className="px-5 py-3 rounded-2xl bg-black text-white hover:opacity-90 transition">Try Again</button>
               </div>
+            </motion.div>
+          </main>
+        )}
+
+        {/* CASH OUT SCREEN */}
+        {phase === "cashout" && (
+          <main className="px-4 md:px-8 py-10">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white text-black rounded-2xl p-6 shadow text-center max-w-2xl mx-auto">
+              {!cashoutClaimed ? (
+                <>
+                  <div className={classNames(isFs ? "text-5xl md:text-6xl" : "text-3xl md:text-5xl", "font-black")}>Repeat after me:</div>
+                  <div className="mt-2 text-2xl md:text-4xl font-black text-red-600">“I am not smarter than Jon.”</div>
+                  <div className="mt-6 text-lg">
+                    Congratulations you’re cashing out with some JON BUCKS. 
+                  </div>
+                  <div className="mt-2 text-xl font-semibold">Current Score: {score.toLocaleString()} Jon Bucks</div>
+                  <div className="mt-6">
+                    <button
+                      onClick={claimCashout}
+                      className="px-5 py-3 rounded-2xl bg-yellow-300 hover:bg-yellow-400 text-black font-bold transition shadow"
+                    >
+                      I said it — Claim Jon Bucks
+                    </button>
+                  </div>
+                  {/* <div className="mt-4">
+                    <button onClick={restart} className="px-5 py-3 rounded-2xl bg-black text-white hover:opacity-90 transition">Cancel & Restart</button>
+                  </div> */}
+                </>
+              ) : (
+                <>
+                  <div className={classNames(isFs ? "text-5xl md:text-6xl" : "text-3xl md:text-5xl", "font-black mb-2")}>🎉 You Cashed Out!</div>
+                  <div className={classNames(isFs ? "text-3xl" : "text-2xl md:text-3xl", "mb-2")}>
+                    Prize:&nbsp;
+                    <CountTo to={cashedAt} suffix=" Jon Bucks" />
+                  </div>
+                  <div className="text-sm text-black/70">Nice try champ. Maybe one day you'll have what it takes.</div>
+                  <div className="mt-6">
+                    <button onClick={restart} className="px-5 py-3 rounded-2xl bg-black text-white hover:opacity-90 transition">Play Again</button>
+                  </div>
+                </>
+              )}
             </motion.div>
           </main>
         )}
