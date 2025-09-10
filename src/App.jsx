@@ -212,6 +212,7 @@ export default function JonSmarterGame() {
   // Lifelines (once per game)
   const [lifelines, setLifelines] = useState({ peek: false, copy: false, hint: false, save: false });
   const [saveArmed, setSaveArmed] = useState(true); // auto-protect on first wrong
+  const [hintForId, setHintForId] = useState(null); // <- NEW: which question the Hint was used on
 
   // Audio state (master volume)
   const [volume, setVolume] = useState(0.8); // 0..1
@@ -393,6 +394,7 @@ function playFanfare() {
     setPhase("board"); setCurrentId(null); setPlayed(new Set()); setScore(0);
     setLifelines({ peek: false, copy: false, hint: false, save: false }); setSaveArmed(true);
     setLocked(false); setResult(null); setPeekOverlay(false); setCopyModal(false);
+    setHintForId(null); // <- NEW: clear hint target
   }
 
   function consumeLifeline(name) { setLifelines((L) => ({ ...L, [name]: true })); }
@@ -400,7 +402,12 @@ function playFanfare() {
   // ——— Lifelines ———
   function doPeek() { if (phase !== "question" || locked || lifelines.peek) return; consumeLifeline("peek"); playSfx("peek"); setPeekOverlay(true); }
   function doCopy() { if (phase !== "question" || locked || lifelines.copy) return; consumeLifeline("copy"); playSfx("copy"); setCopyModal(true); }
-  function doHint() { if (phase !== "question" || locked || lifelines.hint || !current) return; consumeLifeline("hint"); playSfx("hint"); }
+  function doHint() {
+    if (phase !== "question" || locked || lifelines.hint || !current) return;
+    consumeLifeline("hint");
+    playSfx("hint");
+    setHintForId(current.id); // <- NEW: remember which question got the hint
+  }
 
   // ——— Board question grading ———
   function handleAnswer(choiceIdx) {
@@ -459,8 +466,8 @@ function playFanfare() {
 
   // Wider container + bigger type in fullscreen
   const containerW = isFs ? "max-w-[1500px] md:max-w-[1700px]" : "max-w-5xl";
-const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
- const h1Size = isFs ? "text-5xl md:text-6xl" : "text-2xl sm:text-3xl md:text-4xl";
+  const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
+  const h1Size = isFs ? "text-5xl md:text-6xl" : "text-2xl sm:text-3xl md:text-4xl";
   const gradeTitleSize = isFs ? "text-2xl" : "text-xl";
   const tilePad = isFs ? "p-4 md:p-5" : "p-3";
   const tileLabelSize = isFs ? "text-sm" : "text-xs";
@@ -477,20 +484,19 @@ const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
         <header className="px-4 md:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Replace src with your image in /public to show the bubble photo */}
-         
             {/* <img src="/jon-5th-grade.jpg" alt="Jon (5th grade)" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover" /> */}
-      <img
-  src={`${import.meta.env.BASE_URL}jon-5th-grade.jpg`}
-  alt="Jon (5th grade)"
-  className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover shadow"
-  loading="eager"
-  decoding="async"
-/>
+            <img
+              src={`${import.meta.env.BASE_URL}jon-5th-grade.jpg`}
+              alt="Jon (5th grade)"
+              className="w-12 h-12 md:w-14 md:h-14 rounded-2xl object-cover shadow"
+              loading="eager"
+              decoding="async"
+            />
             {/* <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/20 backdrop-blur-sm" /> */}
-          <h1 className={classNames(h1Size, "font-extrabold tracking-tight drop-shadow")}>
-  Are You Smarter Than a 5th Grader?
-  <span className="hidden sm:block text-white/90 text-lg md:text-xl">Jon Edition</span>
-</h1>
+            <h1 className={classNames(h1Size, "font-extrabold tracking-tight drop-shadow")}>
+              Are You Smarter Than a 5th Grader?
+              <span className="hidden sm:block text-white/90 text-lg md:text-xl">Jon Edition</span>
+            </h1>
           </div>
           <div className="text-right px-4 flex items-end gap-3 md:gap-4">
             <div>
@@ -539,7 +545,7 @@ const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
           <main className="px-4 md:px-8 pb-10">
             <div className="mb-3 text-sm opacity-90">Pick any grade & question tile to begin. Remaining: {remaining}</div>
             <div className="overflow-x-auto select-none">
-             <div className={classNames("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3", boardMinW)}>
+              <div className={classNames("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3", boardMinW)}>
                 {[1, 2, 3, 4, 5].map((g) => (
                   <div key={g} className="bg-white/10 rounded-2xl p-3 md:p-4 backdrop-blur-md">
                     <div className={classNames("text-center font-black mb-2", gradeTitleSize)}>Grade {g}</div>
@@ -552,10 +558,10 @@ const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
                             disabled={isPlayed}
                             onClick={() => startQuestion(q.id)}
                             className={classNames(
-                         "w-full text-left bg-white text-black rounded-xl shadow transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
-   tilePad,
-   isPlayed ? "opacity-40 line-through" : "hover:shadow-lg"
- )}
+                              "w-full text-left bg-white text-black rounded-xl shadow transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+                              tilePad,
+                              isPlayed ? "opacity-40 line-through" : "hover:shadow-lg"
+                            )}
                           >
                             <div className={classNames("uppercase tracking-widest opacity-70 font-bold", tileLabelSize)}>{q.subject}</div>
                             <div className={classNames("font-semibold", tilePtsSize)}>{q.grade * 100} pts</div>
@@ -642,9 +648,9 @@ const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
               <div className="mt-4 md:mt-6">
                 <div className={classNames(isFs ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl", "font-bold leading-snug drop-shadow-sm")}>{current.q}</div>
 
-                {/* Hint — visible for everyone once used */}
+                {/* Hint — visible only for the specific question where it was used */}
                 <AnimatePresence>
-                  {lifelines.hint && (
+                  {lifelines.hint && hintForId === current.id && (
                     <motion.div
                       initial={{ opacity: 0, y: -6 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -657,7 +663,7 @@ const boardMinW = isFs ? "min-w-[1200px]" : ""; // allow wrap on small screens
                 </AnimatePresence>
 
                 {/* Choices */}
-             <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3 select-none">
+                <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3 select-none">
                   {current.choices.map((choice, i) => {
                     const isAnswer = i === current.answerIndex;
                     let stateClasses = "";
